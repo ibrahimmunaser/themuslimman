@@ -12,6 +12,14 @@ const nextConfig: NextConfig = {
         pathname: "/seerah-media/**",
       },
     ],
+    // Allow R2 public URLs
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "pub-5e47559fbd9145a4af1f58ceb3a42c81.r2.dev",
+        pathname: "/**",
+      },
+    ],
     // Large slides/infographics — allow up to 100MB source files
     dangerouslyAllowSVG: false,
     // Serve modern formats

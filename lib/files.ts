@@ -13,6 +13,7 @@ import {
   r2GetVideoKey,
   r2GetAudioKey,
   getR2AssetUrl,
+  getR2PublicUrl,
 } from "./r2";
 
 export const SEERAH_ROOT =
@@ -188,8 +189,11 @@ export async function getSlideFiles(
 ): Promise<string[]> {
   if (USE_R2) {
     const keys = await r2GetSlideKeys(partNum, type);
-    // Return R2 asset URLs
-    return keys.map(getR2AssetUrl);
+    // Return R2 public URLs for images (Next.js Image needs these)
+    return keys.map((key) => {
+      const publicUrl = getR2PublicUrl(key);
+      return publicUrl || getR2AssetUrl(key); // Fallback to API route if no public URL
+    });
   }
 
   let folder: string;
