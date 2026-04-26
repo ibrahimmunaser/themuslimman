@@ -18,6 +18,10 @@ import { getR2AssetUrl } from "@/lib/r2";
 import { ChevronRight, Clock, BookOpen } from "lucide-react";
 import { PartTabs } from "@/components/part/part-tabs";
 
+// Force dynamic rendering to check R2 at request time
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function generateStaticParams() {
   return PARTS.map((p) => ({ partId: p.id }));
 }
