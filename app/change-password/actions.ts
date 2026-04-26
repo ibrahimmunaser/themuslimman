@@ -1,12 +1,15 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { changePassword, getCurrentUser } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { roleHome } from "@/lib/roles";
 import type { Role } from "@/lib/roles";
+import { prisma } from "@/lib/db";
+import bcrypt from "bcryptjs";
 
 /**
- * Validates, changes the password, and redirects server-side on success.
+ * Sets a new password for first-time setup (doesn't require current password).
+ * Validates, updates the password, and redirects server-side on success.
  * Using redirect() inside the server action avoids the client-side router
  * race (router.push + router.refresh) that caused the page to spin indefinitely
  * in Next.js 16 due to automatic post-action router cache invalidation.
@@ -21,13 +24,26 @@ export async function changePasswordAndRedirect(
     return { error: "Password must be at least 8 characters." };
   }
 
-  const result = await changePassword(newPassword);
-
-  if (!result.success) {
-    return { error: result.error ?? "Failed to change password. Please try again." };
+  const user = await getCurrentUser();
+  if (!user) {
+    return { error: "Not authenticated" };
   }
 
-  // Password is now updated; re-read user to get their role for the redirect.
-  const user = await getCurrentUser();
-  redirect(user ? roleHome(user.role as Role) : "/login");
+  try {
+    // Hash the new password
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    
+    // Update the user's password
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash },
+    });
+  } catch (error) {
+    console.error("Password update error:", error);
+    return { error: "Failed to change password. Please try again." };
+  }
+
+  // Password is now updated; redirect to their home page
+  const updatedUser = await getCurrentUser();
+  redirect(updatedUser ? roleHome(updatedUser.role as Role) : "/login");
 }
