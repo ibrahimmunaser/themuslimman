@@ -37,10 +37,36 @@ export default async function PreviewPartPage(props: { params: Promise<{ partId:
   if (!partBase) notFound();
 
   const n = partBase.partNumber;
+  
+  // Fetch all async data in parallel
+  const [
+    slidesPresented,
+    slidesDetailed,
+    slidesFacts,
+    briefingText,
+    statementOfFactsText,
+    studyGuideText,
+    reportText,
+    hasMindmap,
+    quiz,
+    flashcards,
+  ] = await Promise.all([
+    getSlideFiles(n, "presented"),
+    getSlideFiles(n, "detailed"),
+    getSlideFiles(n, "facts"),
+    readBriefing(n),
+    readStatementOfFacts(n),
+    readStudyGuide(n),
+    readReport(n),
+    mindmapExists(n),
+    readQuiz(n),
+    readFlashcards(n),
+  ]);
+
   const slideFiles = {
-    presented: getSlideFiles(n, "presented").map((p) => `/seerah-media/${p}`),
-    detailed:  getSlideFiles(n, "detailed").map((p) => `/seerah-media/${p}`),
-    facts:     getSlideFiles(n, "facts").map((p) => `/seerah-media/${p}`),
+    presented: slidesPresented.map((p) => `/seerah-media/${p}`),
+    detailed: slidesDetailed.map((p) => `/seerah-media/${p}`),
+    facts: slidesFacts.map((p) => `/seerah-media/${p}`),
   };
 
   const infConcise  = getInfographicFilename(n, "Concise");
@@ -51,14 +77,14 @@ export default async function PreviewPartPage(props: { params: Promise<{ partId:
     ...partBase,
     assets: {
       ...partBase.assets,
-      briefingText:         readBriefing(n) ?? undefined,
-      statementOfFactsText: readStatementOfFacts(n) ?? undefined,
-      studyGuideText:       readStudyGuide(n) ?? undefined,
-      reportText:           readReport(n) ?? undefined,
-      mindmapUrl:           mindmapExists(n) ? `/seerah-media/Mindmaps/Part ${n} - Mindmap.png` : undefined,
-      quiz:                 readQuiz(n) ?? undefined,
-      flashcards:           readFlashcards(n) ?? undefined,
-      slides:               slideFiles,
+      briefingText: briefingText ?? undefined,
+      statementOfFactsText: statementOfFactsText ?? undefined,
+      studyGuideText: studyGuideText ?? undefined,
+      reportText: reportText ?? undefined,
+      mindmapUrl: hasMindmap ? `/seerah-media/Mindmaps/Part ${n} - Mindmap.png` : undefined,
+      quiz: quiz ?? undefined,
+      flashcards: flashcards ?? undefined,
+      slides: slideFiles,
       infographics: {
         concise:   infConcise  ? `/seerah-media/Infographics/Concise/${infConcise}`    : undefined,
         standard:  infStandard ? `/seerah-media/Infographics/Standard/${infStandard}`  : undefined,
