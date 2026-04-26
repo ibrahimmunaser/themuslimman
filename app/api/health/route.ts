@@ -5,16 +5,16 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const [userCount, orgCount, classCount] = await Promise.all([
+    const [userCount, studentCount, programCount] = await Promise.all([
       prisma.user.count(),
-      prisma.organization.count(),
+      prisma.user.count({ where: { role: "student" } }),
       prisma.class.count(),
     ]);
 
     return NextResponse.json({
       status: "ok",
       database: "connected",
-      counts: { users: userCount, organizations: orgCount, classes: classCount },
+      counts: { users: userCount, students: studentCount, programs: programCount },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
