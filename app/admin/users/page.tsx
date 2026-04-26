@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
-import { roleLabel } from "@/lib/roles";
+import { roleLabel, isRole, type Role } from "@/lib/roles";
 
 export const metadata = { title: "Users" };
 export const dynamic = "force-dynamic";
@@ -35,7 +35,7 @@ export default async function AdminUsersPage() {
                 <td className="px-4 py-3 text-sm text-text-secondary">{u.email}</td>
                 <td className="px-4 py-3">
                   <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gold/10 text-gold text-xs font-medium">
-                    {roleLabel(u.role as "admin" | "teacher" | "student")}
+                    {isRole(u.role) ? roleLabel(u.role as Role) : u.role}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm text-text-muted tabular-nums">
