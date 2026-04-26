@@ -14,10 +14,11 @@ export async function joinClassByCode(
   const user = await requireStudent();
   if (!user.studentProfileId) return { success: false, error: "Student profile required." };
 
-  const normalized = code.trim().toUpperCase();
+  const normalized = code.trim().toLowerCase();
   if (!normalized) return { success: false, error: "Enter a class code." };
 
-  const cls = await prisma.class.findUnique({ where: { joinCode: normalized } });
+  // Look up by slug (the slug is the unique identifier for a class)
+  const cls = await prisma.class.findUnique({ where: { slug: normalized } });
   if (!cls) return { success: false, error: "No class matches that code." };
   if (cls.status === "archived") return { success: false, error: "This class is archived." };
 
@@ -29,11 +30,10 @@ export async function joinClassByCode(
     return { success: true, classId: cls.id };
   }
 
-  const status = cls.allowAutoJoin ? "active" : "pending";
   await prisma.classEnrollment.upsert({
     where: { classId_studentId: { classId: cls.id, studentId: user.studentProfileId } },
-    create: { classId: cls.id, studentId: user.studentProfileId, status },
-    update: { status, removedAt: null, joinedAt: new Date() },
+    create: { classId: cls.id, studentId: user.studentProfileId, status: "active" },
+    update: { status: "active", removedAt: null, joinedAt: new Date() },
   });
 
   revalidatePath("/student/dashboard");
