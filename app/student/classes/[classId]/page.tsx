@@ -8,7 +8,6 @@ import {
   BookOpen,
   Megaphone,
   Play,
-  User,
 } from "lucide-react";
 import { requireStudent } from "@/lib/auth";
 import { getStudentClassView } from "@/lib/queries/student";
@@ -62,11 +61,6 @@ export default async function StudentClassViewPage({ params }: Props) {
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-text">{cls.title}</h1>
         <div className="flex items-center gap-3 mt-2 text-sm text-text-secondary">
-          <span className="flex items-center gap-1.5">
-            <User className="w-3.5 h-3.5 text-gold" />
-            {cls.teacher.user.fullName}
-          </span>
-          <span className="text-text-muted">·</span>
           <span className="flex items-center gap-1.5">
             <BookOpen className="w-3.5 h-3.5" />
             {releasedCount} / {totalItems} released

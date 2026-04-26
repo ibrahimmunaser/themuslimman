@@ -8,7 +8,6 @@ export async function getStudentDashboardData(studentProfileId: string) {
       include: {
         class: {
           include: {
-            teacher: { include: { user: { select: { fullName: true } } } },
             classCourse: {
               include: {
                 items: { select: { id: true } },
@@ -49,7 +48,6 @@ export async function getStudentClassView(studentProfileId: string, classId: str
     include: {
       class: {
         include: {
-          teacher: { include: { user: { select: { fullName: true } } } },
           classCourse: {
             include: {
               items: {
