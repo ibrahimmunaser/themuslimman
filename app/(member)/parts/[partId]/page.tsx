@@ -15,6 +15,7 @@ import {
   readFlashcards,
   getPartAssetUrls,
 } from "@/lib/files";
+import { getR2AssetUrl } from "@/lib/r2";
 import { ChevronLeft, ChevronRight, Clock, BookOpen, Star } from "lucide-react";
 import { PartTabs } from "@/components/part/part-tabs";
 import { CourseContentsDrawer } from "@/components/part/course-contents-drawer";

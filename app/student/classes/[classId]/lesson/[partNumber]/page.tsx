@@ -16,6 +16,7 @@ import {
   readFlashcards,
   getPartAssetUrls,
 } from "@/lib/files";
+import { getR2AssetUrl } from "@/lib/r2";
 import {
   ArrowLeft,
   ChevronLeft,
