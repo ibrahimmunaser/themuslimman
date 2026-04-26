@@ -35,6 +35,7 @@
     "prisma/seed.ts",
     "prisma/seed-simplified.ts",
     "prisma/seed-assets.ts",
-    "scripts/**"
+    "scripts/**",
+    "lib/test-email.ts"
   ]
 }

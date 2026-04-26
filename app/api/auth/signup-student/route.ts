@@ -6,7 +6,6 @@ import { prisma } from "@/lib/db";
 import { generateUniqueUsername, validateFullName } from "@/lib/username-generator";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const generateToken = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 32);
 
 const SignupSchema = z.object({
@@ -94,6 +93,7 @@ export async function POST(request: NextRequest) {
     const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}`;
 
     try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
         from: "Seerah LMS <onboarding@resend.dev>",
         to: email,
