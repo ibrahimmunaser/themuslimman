@@ -162,7 +162,7 @@ export async function login(
 // Logout
 // ─────────────────────────────────────────────────────────────
 
-export async function logout(): Promise<{ success: boolean }> {
+export async function logout(): Promise<void> {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
 
@@ -171,7 +171,6 @@ export async function logout(): Promise<{ success: boolean }> {
   }
 
   await clearSessionCookie();
-  return { success: true };
 }
 
 // ─────────────────────────────────────────────────────────────
