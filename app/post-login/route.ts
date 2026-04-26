@@ -17,10 +17,6 @@ export async function GET(request: NextRequest) {
     return response;
   }
 
-  // Org-managed users on first login must set a new password
-  if (user.mustChangePassword) {
-    return NextResponse.redirect(new URL("/change-password", origin));
-  }
-
+  // Direct to user's home page based on role
   return NextResponse.redirect(new URL(roleHome(user.role), origin));
 }
