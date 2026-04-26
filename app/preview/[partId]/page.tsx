@@ -87,6 +87,8 @@ export default async function PreviewPartPage(props: { params: Promise<{ partId:
       statementOfFactsText: statementOfFactsText ?? undefined,
       studyGuideText: studyGuideText ?? undefined,
       reportText: reportText ?? undefined,
+      videoUrl: assetUrls.videoUrl,
+      audioUrl: assetUrls.audioUrl,
       mindmapUrl: assetUrls.mindmapUrl,
       quiz: quiz ?? undefined,
       flashcards: flashcards ?? undefined,
