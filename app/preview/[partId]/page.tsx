@@ -22,10 +22,6 @@ import { PartTabs } from "@/components/part/part-tabs";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export async function generateStaticParams() {
-  return PARTS.map((p) => ({ partId: p.id }));
-}
-
 export async function generateMetadata(props: { params: Promise<{ partId: string }> }) {
   const { partId } = await props.params;
   const part = getPartById(partId);
