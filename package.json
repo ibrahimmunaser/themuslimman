@@ -10,13 +10,13 @@
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "npx tsx prisma/seed.ts",
+    "db:seed": "npx tsx prisma/seed-simplified.ts",
     "db:seed-assets": "npx tsx prisma/seed-assets.ts",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset --force"
   },
   "prisma": {
-    "seed": "npx tsx prisma/seed.ts"
+    "seed": "npx tsx prisma/seed-simplified.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1037.0",
