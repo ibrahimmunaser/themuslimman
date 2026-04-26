@@ -1,28 +1,8 @@
 import "server-only";
 import { prisma } from "@/lib/db";
-import type { Prisma } from "@prisma/client";
-
-// Type for enrollment with all includes
-type EnrollmentWithClass = Prisma.ClassEnrollmentGetPayload<{
-  include: {
-    class: {
-      include: {
-        classCourse: {
-          include: {
-            items: {
-              include: { seerahPart: true };
-            };
-          };
-        };
-        releaseRules: true;
-        announcements: true;
-      };
-    };
-  };
-}>;
 
 export async function getStudentDashboardData(studentProfileId: string) {
-  const [enrollments, recentAnnouncements, recentProgress] = await Promise.all([
+  const [enrollments, recentProgress] = await Promise.all([
     prisma.classEnrollment.findMany({
       where: { studentId: studentProfileId, status: "active" },
       include: {
@@ -39,15 +19,6 @@ export async function getStudentDashboardData(studentProfileId: string) {
         },
       },
     }),
-    prisma.announcement.findMany({
-      where: {
-        isPublished: true,
-        class: { enrollments: { some: { studentId: studentProfileId, status: "active" } } },
-      },
-      include: { class: { select: { id: true, title: true } } },
-      orderBy: { publishedAt: "desc" },
-      take: 5,
-    }),
     prisma.studentProgress.findMany({
       where: { studentId: studentProfileId },
       include: {
@@ -59,7 +30,7 @@ export async function getStudentDashboardData(studentProfileId: string) {
     }),
   ]);
 
-  return { enrollments, recentAnnouncements, recentProgress };
+  return { enrollments, recentAnnouncements: [], recentProgress };
 }
 
 export async function getStudentClassView(studentProfileId: string, classId: string) {
@@ -77,15 +48,10 @@ export async function getStudentClassView(studentProfileId: string, classId: str
             },
           },
           releaseRules: true,
-          announcements: {
-            where: { isPublished: true },
-            orderBy: { publishedAt: "desc" },
-            take: 5,
-          },
         },
       },
     },
-  }) as EnrollmentWithClass | null;
+  });
 
   if (!enrollment) return null;
   if (enrollment.status !== "active") return null;

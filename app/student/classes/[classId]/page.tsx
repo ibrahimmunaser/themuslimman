@@ -6,7 +6,6 @@ import {
   Unlock,
   CheckCircle2,
   BookOpen,
-  Megaphone,
   Play,
 } from "lucide-react";
 import { requireStudent } from "@/lib/auth";
@@ -80,28 +79,6 @@ export default async function StudentClassViewPage({ params }: Props) {
         </div>
         <ProgressBar value={totalItems > 0 ? (completedCount / totalItems) * 100 : 0} tone="gold" />
       </div>
-
-      {cls.announcements.length > 0 && (
-        <div className="mb-8">
-          <p className="text-xs text-text-muted uppercase tracking-wider mb-3">Announcements</p>
-          <div className="space-y-2">
-            {cls.announcements.map((a) => (
-              <div key={a.id} className="p-4 rounded-xl border border-gold/20 bg-gold/5">
-                <div className="flex items-center gap-2 mb-1">
-                  <Megaphone className="w-3.5 h-3.5 text-gold" />
-                  <p className="text-sm font-semibold text-text">{a.title}</p>
-                </div>
-                <p className="text-sm text-text-secondary">{a.body}</p>
-                {a.publishedAt && (
-                  <p className="text-[10px] text-text-muted mt-2">
-                    {new Date(a.publishedAt).toLocaleDateString()}
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       <p className="text-xs text-text-muted uppercase tracking-wider mb-4">Curriculum</p>
 
