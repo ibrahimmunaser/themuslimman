@@ -1,5 +1,25 @@
 import "server-only";
 import { prisma } from "@/lib/db";
+import type { Prisma } from "@prisma/client";
+
+// Type for enrollment with all includes
+type EnrollmentWithClass = Prisma.ClassEnrollmentGetPayload<{
+  include: {
+    class: {
+      include: {
+        classCourse: {
+          include: {
+            items: {
+              include: { seerahPart: true };
+            };
+          };
+        };
+        releaseRules: true;
+        announcements: true;
+      };
+    };
+  };
+}>;
 
 export async function getStudentDashboardData(studentProfileId: string) {
   const [enrollments, recentAnnouncements, recentProgress] = await Promise.all([
@@ -65,7 +85,7 @@ export async function getStudentClassView(studentProfileId: string, classId: str
         },
       },
     },
-  });
+  }) as EnrollmentWithClass | null;
 
   if (!enrollment) return null;
   if (enrollment.status !== "active") return null;
