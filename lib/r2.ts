@@ -201,24 +201,31 @@ export async function r2GetInfographicKey(
   partNum: number,
   style: "Bento Grid" | "Concise" | "Standard"
 ): Promise<string | null> {
-  const prefix = `infographics/${style}/`;
+  // Map style names to actual R2 folder names (with hyphens)
+  const folderMap: Record<string, string> = {
+    "Bento Grid": "Infographics-Bento-Grid",
+    "Concise": "Infographics-Concise",
+    "Standard": "Infographics-Standard",
+  };
   
-  // List files in the folder
-  const files = await r2ListFiles(prefix);
+  const prefix = `${folderMap[style]}/`;
   
-  if (style === "Bento Grid") {
-    const match = files.find((f) => f.key === `${prefix}Part ${partNum}.png`);
-    return match?.key || null;
+  // Simple filename: "Part X.png"
+  const simpleKey = `${prefix}Part ${partNum}.png`;
+  if (await r2FileExists(simpleKey)) {
+    return simpleKey;
   }
   
-  // Standard / Concise: strict match first
-  const strictPrefix = `${prefix}Part ${partNum} - Infographic`;
-  const strictMatch = files.find((f) => 
-    f.key.startsWith(strictPrefix) && f.key.endsWith(".png")
-  );
-  if (strictMatch) return strictMatch.key;
+  // List files in the folder to find alternate naming
+  const files = await r2ListFiles(prefix);
   
-  // Fallback: loose match
+  // Try to find with " - Infographic" suffix
+  const withSuffix = files.find((f) => 
+    f.key === `${prefix}Part ${partNum} - Infographic.png`
+  );
+  if (withSuffix) return withSuffix.key;
+  
+  // Fallback: find any file matching "Part X" (but not "Part XY")
   const looseRe = new RegExp(`^${prefix.replace(/\//g, "\\/")}Part ${partNum}[^0-9]`);
   const looseMatch = files.find((f) => 
     f.key.endsWith(".png") && looseRe.test(f.key)

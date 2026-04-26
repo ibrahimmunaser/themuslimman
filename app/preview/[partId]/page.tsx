@@ -95,17 +95,17 @@ export default async function PreviewPartPage(props: { params: Promise<{ partId:
       slides: slideFiles,
       infographics: {
         concise: infConcise
-          ? (infConcise.includes("infographics/") 
+          ? (infConcise.includes("/") 
               ? getR2AssetUrl(infConcise) 
               : `/seerah-media/Infographics/Concise/${infConcise}`)
           : undefined,
         standard: infStandard
-          ? (infStandard.includes("infographics/") 
+          ? (infStandard.includes("/") 
               ? getR2AssetUrl(infStandard) 
               : `/seerah-media/Infographics/Standard/${infStandard}`)
           : undefined,
         bentoGrid: infBento
-          ? (infBento.includes("infographics/") 
+          ? (infBento.includes("/") 
               ? getR2AssetUrl(infBento) 
               : `/seerah-media/Infographics/Bento Grid/${infBento}`)
           : undefined,

@@ -117,6 +117,9 @@ export async function mindmapExists(partNum: number): Promise<boolean> {
  *   Standard/Concise: "Part N - Infographic.png" (sometimes "Part N - Infographic - 2.png" or "Part N - Infographic 2.png")
  *   Bento Grid:       "Part N.png"
  * We scan the directory for the first matching file so naming quirks don't break things.
+ * 
+ * When using R2, returns the full R2 key (e.g., "Infographics-Bento-Grid/Part 1.png")
+ * When using local files, returns just the filename
  */
 export async function getInfographicFilename(
   partNum: number,
@@ -124,9 +127,7 @@ export async function getInfographicFilename(
 ): Promise<string | null> {
   if (USE_R2) {
     const key = await r2GetInfographicKey(partNum, style);
-    if (!key) return null;
-    // Return just the filename for backward compatibility
-    return key.split("/").pop() || null;
+    return key; // Return full R2 key
   }
 
   const dir = path.join(SEERAH_ROOT, "Infographics", style);
