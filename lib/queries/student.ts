@@ -67,7 +67,8 @@ export async function getStudentClassView(studentProfileId: string, classId: str
     },
   });
 
-  if (!enrollment || enrollment.status !== "active") return null;
+  if (!enrollment) return null;
+  if (enrollment.status !== "active") return null;
 
   const progress = await prisma.studentProgress.findMany({
     where: { studentId: studentProfileId, classId },
