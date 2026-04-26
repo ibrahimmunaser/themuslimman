@@ -26,7 +26,7 @@ export default async function AdminStudentsPage() {
             <tr className="text-left">
               <th className="px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Name</th>
               <th className="px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Email</th>
-              <th className="px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Classes</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Programs</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">

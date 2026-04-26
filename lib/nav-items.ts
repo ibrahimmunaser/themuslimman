@@ -6,8 +6,10 @@ import {
   Settings,
   Library,
   BarChart3,
-  FolderTree,
+  GraduationCap,
   ShieldCheck,
+  HardDrive,
+  ShoppingCart,
 } from "lucide-react";
 import { ROLES, type Role } from "./roles";
 
@@ -20,19 +22,21 @@ export type NavItem = {
 
 export const STUDENT_NAV: NavItem[] = [
   { href: "/student/dashboard", label: "Dashboard",   icon: LayoutDashboard, exact: true },
-  { href: "/student/classes",   label: "My Classes",  icon: BookOpen },
+  { href: "/student/classes",   label: "My Programs", icon: BookOpen },
   { href: "/student/progress",  label: "Progress",    icon: BarChart3 },
   { href: "/student/settings",  label: "Settings",    icon: Settings },
 ];
 
 export const ADMIN_NAV: NavItem[] = [
-  { href: "/admin/dashboard",        label: "Dashboard",        icon: LayoutDashboard, exact: true },
-  { href: "/admin/students",         label: "Students",         icon: Users },
-  { href: "/admin/classes",          label: "Classes",          icon: BookOpen },
-  { href: "/admin/content",          label: "Content Library",  icon: Library },
-  { href: "/admin/course-templates", label: "Course Templates", icon: FolderTree },
-  { href: "/admin/analytics",        label: "Analytics",        icon: BarChart3 },
-  { href: "/admin/settings",         label: "Settings",         icon: ShieldCheck },
+  { href: "/admin/dashboard",  label: "Dashboard",       icon: LayoutDashboard, exact: true },
+  { href: "/admin/students",   label: "Students",        icon: Users },
+  { href: "/admin/courses",    label: "Courses",         icon: BookOpen },
+  { href: "/admin/content",    label: "Content Library", icon: Library },
+  { href: "/admin/programs",   label: "Programs",        icon: GraduationCap },
+  { href: "/admin/analytics",  label: "Analytics",       icon: BarChart3 },
+  { href: "/admin/orders",     label: "Orders",          icon: ShoppingCart },
+  { href: "/admin/r2",         label: "R2 Storage",      icon: HardDrive },
+  { href: "/admin/settings",   label: "Settings",        icon: ShieldCheck },
 ];
 
 export function navForRole(role: Role): NavItem[] {

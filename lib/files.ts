@@ -1,8 +1,25 @@
 import fs from "fs";
 import path from "path";
+import {
+  r2ReadBriefing,
+  r2ReadStatementOfFacts,
+  r2ReadStudyGuide,
+  r2ReadReport,
+  r2ReadFlashcards,
+  r2ReadQuiz,
+  r2GetMindmapKey,
+  r2GetInfographicKey,
+  r2GetSlideKeys,
+  r2GetVideoKey,
+  r2GetAudioKey,
+  getR2AssetUrl,
+} from "./r2";
 
 export const SEERAH_ROOT =
   process.env.SEERAH_DATA_DIR ?? path.resolve(process.cwd(), "..", "Seerah-data");
+
+// Feature flag to use R2 or local filesystem
+const USE_R2 = process.env.R2_BUCKET && process.env.R2_ACCESS_KEY_ID;
 
 // ─── Audio ───────────────────────────────────────────────────────────────────
 // Some files have a " (1)" suffix (Windows duplicate naming artifact)
@@ -30,14 +47,20 @@ export function readTextFile(filePath: string): string | null {
 
 // ─── Briefing ─────────────────────────────────────────────────────────────────
 
-export function readBriefing(partNum: number): string | null {
+export async function readBriefing(partNum: number): Promise<string | null> {
+  if (USE_R2) {
+    return await r2ReadBriefing(partNum);
+  }
   const p = path.join(SEERAH_ROOT, "Briefing", `Part ${partNum} Briefing Document.txt`);
   return readTextFile(p);
 }
 
 // ─── Statement of Facts ───────────────────────────────────────────────────────
 
-export function readStatementOfFacts(partNum: number): string | null {
+export async function readStatementOfFacts(partNum: number): Promise<string | null> {
+  if (USE_R2) {
+    return await r2ReadStatementOfFacts(partNum);
+  }
   const p = path.join(SEERAH_ROOT, "StatementOfFacts", `Part ${partNum} - Statement of Facts.txt`);
   return readTextFile(p);
 }
@@ -45,7 +68,10 @@ export function readStatementOfFacts(partNum: number): string | null {
 // ─── Study Guide ──────────────────────────────────────────────────────────────
 // Part 1 is .docx — skip it (no easy server-side docx reader without a dep)
 
-export function readStudyGuide(partNum: number): string | null {
+export async function readStudyGuide(partNum: number): Promise<string | null> {
+  if (USE_R2) {
+    return await r2ReadStudyGuide(partNum);
+  }
   const txt = path.join(SEERAH_ROOT, "Studyguides", `Part ${partNum} - Study Guide.txt`);
   if (fs.existsSync(txt)) return readTextFile(txt);
 
@@ -56,7 +82,10 @@ export function readStudyGuide(partNum: number): string | null {
 // ─── Report ───────────────────────────────────────────────────────────────────
 // Report filenames have variable titles, so we glob the directory
 
-export function readReport(partNum: number): string | null {
+export async function readReport(partNum: number): Promise<string | null> {
+  if (USE_R2) {
+    return await r2ReadReport(partNum);
+  }
   const dir = path.join(SEERAH_ROOT, "Reports");
   try {
     const files = fs.readdirSync(dir);
@@ -74,7 +103,11 @@ export function readReport(partNum: number): string | null {
 
 // ─── Image existence check ────────────────────────────────────────────────────
 
-export function mindmapExists(partNum: number): boolean {
+export async function mindmapExists(partNum: number): Promise<boolean> {
+  if (USE_R2) {
+    const key = await r2GetMindmapKey(partNum);
+    return key !== null;
+  }
   return fs.existsSync(path.join(SEERAH_ROOT, "Mindmaps", `Part ${partNum} - Mindmap.png`));
 }
 
@@ -84,7 +117,17 @@ export function mindmapExists(partNum: number): boolean {
  *   Bento Grid:       "Part N.png"
  * We scan the directory for the first matching file so naming quirks don't break things.
  */
-export function getInfographicFilename(partNum: number, style: "Bento Grid" | "Concise" | "Standard"): string | null {
+export async function getInfographicFilename(
+  partNum: number,
+  style: "Bento Grid" | "Concise" | "Standard"
+): Promise<string | null> {
+  if (USE_R2) {
+    const key = await r2GetInfographicKey(partNum, style);
+    if (!key) return null;
+    // Return just the filename for backward compatibility
+    return key.split("/").pop() || null;
+  }
+
   const dir = path.join(SEERAH_ROOT, "Infographics", style);
   try {
     const files = fs.readdirSync(dir);
@@ -108,8 +151,12 @@ export function getInfographicFilename(partNum: number, style: "Bento Grid" | "C
   }
 }
 
-export function infographicExists(partNum: number, style: "Bento Grid" | "Concise" | "Standard"): boolean {
-  return getInfographicFilename(partNum, style) !== null;
+export async function infographicExists(
+  partNum: number,
+  style: "Bento Grid" | "Concise" | "Standard"
+): Promise<boolean> {
+  const filename = await getInfographicFilename(partNum, style);
+  return filename !== null;
 }
 
 // ─── Slides ───────────────────────────────────────────────────────────────────
@@ -135,7 +182,16 @@ export function getFactsSlideFolder(partNum: number): string {
   return path.join(SEERAH_ROOT, "Slides - Watermark - Facts", `Part ${partNum}`);
 }
 
-export function getSlideFiles(partNum: number, type: "presented" | "detailed" | "facts"): string[] {
+export async function getSlideFiles(
+  partNum: number,
+  type: "presented" | "detailed" | "facts"
+): Promise<string[]> {
+  if (USE_R2) {
+    const keys = await r2GetSlideKeys(partNum, type);
+    // Return just the relative paths for backward compatibility
+    return keys.map((key) => key.replace(/^slides-(presented|detailed|facts)\//, ""));
+  }
+
   let folder: string;
   if (type === "presented") folder = getPresentedSlideFolder(partNum);
   else if (type === "detailed") folder = getDetailedSlideFolder(partNum);
@@ -159,7 +215,10 @@ export function getSlideFiles(partNum: number, type: "presented" | "detailed" | 
 
 // ─── Flashcards ───────────────────────────────────────────────────────────────
 
-export function readFlashcards(partNum: number): import("./types").FlashcardSet | null {
+export async function readFlashcards(partNum: number): Promise<import("./types").FlashcardSet | null> {
+  if (USE_R2) {
+    return await r2ReadFlashcards(partNum);
+  }
   const pad = partNum < 10 ? `0${partNum}` : `${partNum}`;
   const p = path.join(SEERAH_ROOT, "Flashcards", `Part_${pad}.json`);
   try {
@@ -173,7 +232,10 @@ export function readFlashcards(partNum: number): import("./types").FlashcardSet 
 
 // ─── Quiz ─────────────────────────────────────────────────────────────────────
 
-export function readQuiz(partNum: number): import("./types").Quiz | null {
+export async function readQuiz(partNum: number): Promise<import("./types").Quiz | null> {
+  if (USE_R2) {
+    return await r2ReadQuiz(partNum);
+  }
   const pad = partNum < 10 ? `0${partNum}` : `${partNum}`;
   const p = path.join(SEERAH_ROOT, "Quizzes", `Part_${pad}.json`);
   try {
@@ -187,10 +249,49 @@ export function readQuiz(partNum: number): import("./types").Quiz | null {
 
 // ─── Video / Audio existence ──────────────────────────────────────────────────
 
-export function videoExists(partNum: number): boolean {
+export async function videoExists(partNum: number): Promise<boolean> {
+  if (USE_R2) {
+    const key = await r2GetVideoKey(partNum);
+    return key !== null;
+  }
   return fs.existsSync(path.join(SEERAH_ROOT, "Videos", `Part ${partNum}.mp4`));
 }
 
-export function audioExists(partNum: number): boolean {
+export async function audioExists(partNum: number): Promise<boolean> {
+  if (USE_R2) {
+    const key = await r2GetAudioKey(partNum);
+    return key !== null;
+  }
   return getAudioFilename(partNum) !== null;
+}
+
+// ─── R2-specific URL helpers ──────────────────────────────────────────────────
+
+/**
+ * Get all asset URLs for a part using R2
+ */
+export async function getPartAssetUrls(partNum: number) {
+  if (!USE_R2) {
+    // Return local paths
+    return {
+      videoUrl: (await videoExists(partNum)) ? `/api/media/video/${partNum}` : undefined,
+      audioUrl: (await audioExists(partNum)) ? `/api/media/audio/${partNum}` : undefined,
+      mindmapUrl: (await mindmapExists(partNum))
+        ? `/seerah-media/Mindmaps/Part ${partNum} - Mindmap.png`
+        : undefined,
+    };
+  }
+
+  // Get R2 keys
+  const [videoKey, audioKey, mindmapKey] = await Promise.all([
+    r2GetVideoKey(partNum),
+    r2GetAudioKey(partNum),
+    r2GetMindmapKey(partNum),
+  ]);
+
+  return {
+    videoUrl: videoKey ? getR2AssetUrl(videoKey) : undefined,
+    audioUrl: audioKey ? getR2AssetUrl(audioKey) : undefined,
+    mindmapUrl: mindmapKey ? getR2AssetUrl(mindmapKey) : undefined,
+  };
 }

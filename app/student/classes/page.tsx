@@ -6,7 +6,7 @@ import { ProgressBar } from "@/components/ui/progress-bar";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 
-export const metadata = { title: "My Classes" };
+export const metadata = { title: "My Programs" };
 
 export default async function StudentClassesPage() {
   const user = await requireStudent();
@@ -17,9 +17,9 @@ export default async function StudentClassesPage() {
     <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-text">My Classes</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-text">My Programs</h1>
           <p className="text-text-secondary mt-1 text-sm">
-            All the Seerah classes you&apos;re enrolled in.
+            Your enrolled Seerah learning programs.
           </p>
         </div>
         <Link href="/student/join">
@@ -33,13 +33,13 @@ export default async function StudentClassesPage() {
       {enrollments.length === 0 ? (
         <EmptyState
           icon={GraduationCap}
-          title="Not in any classes yet"
-          description="Ask your teacher for a join code or link."
+          title="No programs yet"
+          description="Join a program to start your Seerah journey."
           action={
             <Link href="/student/join">
               <Button variant="primary" size="md">
                 <KeyRound className="w-4 h-4" />
-                Join a class
+                Join a program
               </Button>
             </Link>
           }
@@ -54,9 +54,6 @@ export default async function StudentClassesPage() {
                 <div className="p-5 rounded-2xl border border-border bg-surface hover:border-gold/30 hover:bg-surface-raised transition-all h-full">
                   <p className="font-semibold text-text group-hover:text-gold transition-colors truncate">
                     {cls.title}
-                  </p>
-                  <p className="text-xs text-text-muted mt-1">
-                    Taught by {cls.teacher.user.fullName}
                   </p>
                   {cls.description && (
                     <p className="text-xs text-text-secondary mt-2 line-clamp-2">{cls.description}</p>

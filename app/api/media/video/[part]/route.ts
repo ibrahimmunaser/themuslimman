@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-import { Readable } from "stream";
-import { SEERAH_ROOT } from "@/lib/files";
+import { r2StreamFile, r2GetMetadata, r2GetVideoKey, generateETag, isCached } from "@/lib/r2";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const CHUNK_SIZE = 256 * 1024;
-const HIGH_WATER_MARK = 64 * 1024;
 
 export async function GET(
   req: NextRequest,
@@ -18,54 +12,96 @@ export async function GET(
   const partNum = parseInt(part, 10);
   if (isNaN(partNum)) return new NextResponse("Bad request", { status: 400 });
 
-  const filePath = path.join(SEERAH_ROOT, "Videos", `Part ${partNum}.mp4`);
-  if (!fs.existsSync(filePath)) {
-    return new NextResponse("Not found", { status: 404 });
-  }
-
-  const stat = fs.statSync(filePath);
-  const fileSize = stat.size;
-  const rangeHeader = req.headers.get("range");
-
-  let start = 0;
-  let end = Math.min(CHUNK_SIZE - 1, fileSize - 1);
-  let status = 206;
-
-  if (rangeHeader) {
-    const match = /bytes=(\d+)-(\d*)/.exec(rangeHeader);
-    if (match) {
-      start = parseInt(match[1], 10);
-      end = match[2]
-        ? Math.min(parseInt(match[2], 10), fileSize - 1)
-        : Math.min(start + CHUNK_SIZE - 1, fileSize - 1);
+  try {
+    // Get video key from R2
+    const videoKey = await r2GetVideoKey(partNum);
+    
+    if (!videoKey) {
+      return new NextResponse("Not found", { status: 404 });
     }
-  }
 
-  if (start >= fileSize || end >= fileSize || start > end) {
-    return new NextResponse("Range Not Satisfiable", {
-      status: 416,
-      headers: { "Content-Range": `bytes */${fileSize}` },
+    // Get file metadata
+    const metadata = await r2GetMetadata(videoKey);
+    
+    if (!metadata) {
+      return new NextResponse("Not found", { status: 404 });
+    }
+
+    const fileSize = metadata.size;
+    const etag = generateETag({ size: metadata.size, lastModified: metadata.lastModified });
+    const clientETag = req.headers.get("if-none-match");
+    
+    // Check cache
+    if (isCached(etag, clientETag)) {
+      return new NextResponse(null, { status: 304 });
+    }
+
+    // Handle range requests
+    const rangeHeader = req.headers.get("range");
+    
+    if (!rangeHeader) {
+      // Stream entire file (not recommended for videos, but supported)
+      const response = await r2StreamFile(videoKey);
+      
+      if (!response.Body) {
+        return new NextResponse("Error reading file", { status: 500 });
+      }
+
+      const stream = response.Body.transformToWebStream();
+
+      return new NextResponse(stream as any, {
+        status: 200,
+        headers: {
+          "Content-Type": "video/mp4",
+          "Content-Length": String(fileSize),
+          "Accept-Ranges": "bytes",
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "ETag": etag,
+        },
+      });
+    }
+
+    // Parse range header
+    const match = /bytes=(\d+)-(\d*)/.exec(rangeHeader);
+    
+    if (!match) {
+      return new NextResponse("Invalid range", { status: 416 });
+    }
+
+    const start = parseInt(match[1], 10);
+    const end = match[2] ? parseInt(match[2], 10) : fileSize - 1;
+
+    if (start >= fileSize || end >= fileSize || start > end) {
+      return new NextResponse("Range Not Satisfiable", {
+        status: 416,
+        headers: { "Content-Range": `bytes */${fileSize}` },
+      });
+    }
+
+    const chunkSize = end - start + 1;
+
+    // Stream range from R2
+    const response = await r2StreamFile(videoKey, `bytes=${start}-${end}`);
+    
+    if (!response.Body) {
+      return new NextResponse("Error reading file", { status: 500 });
+    }
+
+    const stream = response.Body.transformToWebStream();
+
+    return new NextResponse(stream as any, {
+      status: 206,
+      headers: {
+        "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+        "Accept-Ranges": "bytes",
+        "Content-Length": String(chunkSize),
+        "Content-Type": "video/mp4",
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "ETag": etag,
+      },
     });
+  } catch (error) {
+    console.error("Error streaming video from R2:", error);
+    return new NextResponse("Internal server error", { status: 500 });
   }
-
-  const chunkSize = end - start + 1;
-
-  const nodeStream = fs.createReadStream(filePath, {
-    start,
-    end,
-    highWaterMark: HIGH_WATER_MARK,
-  });
-
-  const webStream = Readable.toWeb(nodeStream) as ReadableStream<Uint8Array>;
-
-  return new NextResponse(webStream, {
-    status,
-    headers: {
-      "Content-Range": `bytes ${start}-${end}/${fileSize}`,
-      "Accept-Ranges": "bytes",
-      "Content-Length": String(chunkSize),
-      "Content-Type": "video/mp4",
-      "Cache-Control": "public, max-age=3600",
-    },
-  });
 }

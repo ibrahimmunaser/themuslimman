@@ -13,7 +13,8 @@ export const metadata = {
 export default async function ConclusionPage() {
   await requireAuth();
 
-  const videoUrl = videoExists(101) ? "/api/media/video/101" : null;
+  const hasVideo = await videoExists(101);
+  const videoUrl = hasVideo ? "/api/media/video/101" : null;
 
   return (
     <div className="min-h-full">

@@ -56,13 +56,13 @@ export default async function StudentDashboardPage() {
         <p className="text-text-secondary mt-1 text-sm">
           {data.enrollments.length > 0
             ? "Continue your Seerah journey."
-            : "You&apos;re not in any classes yet. Join one to get started."}
+            : "Join a program to get started."}
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
         <StatCard
-          label="Enrolled classes"
+          label="Programs"
           value={data.enrollments.length}
           icon={GraduationCap}
           tone="gold"
@@ -118,7 +118,7 @@ export default async function StudentDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <section className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-xs text-text-muted uppercase tracking-wider">Your classes</p>
+            <p className="text-xs text-text-muted uppercase tracking-wider">Your programs</p>
             <Link
               href="/student/classes"
               className="text-xs text-gold hover:text-gold-light transition-colors flex items-center gap-1"
@@ -130,13 +130,13 @@ export default async function StudentDashboardPage() {
           {data.enrollments.length === 0 ? (
             <EmptyState
               icon={KeyRound}
-              title="Not in any classes yet"
-              description="Ask your teacher for a join code or invite link."
+              title="No programs yet"
+              description="Join a program to start learning."
               action={
                 <Link href="/student/join">
                   <Button variant="primary" size="md">
                     <KeyRound className="w-4 h-4" />
-                    Join a class
+                    Join a program
                   </Button>
                 </Link>
               }
@@ -157,9 +157,6 @@ export default async function StudentDashboardPage() {
                         <div className="min-w-0 flex-1">
                           <p className="font-semibold text-text group-hover:text-gold transition-colors truncate">
                             {cls.title}
-                          </p>
-                          <p className="text-xs text-text-muted mt-0.5">
-                            Taught by {cls.teacher.user.fullName}
                           </p>
                           <div className="mt-3 flex items-center gap-3">
                             <ProgressBar
@@ -188,7 +185,7 @@ export default async function StudentDashboardPage() {
             <EmptyState
               icon={Megaphone}
               title="All quiet"
-              description="Your teachers haven&apos;t posted anything recently."
+              description="No recent announcements."
             />
           ) : (
             <div className="space-y-2">

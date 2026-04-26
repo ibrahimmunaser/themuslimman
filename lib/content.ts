@@ -1,6 +1,6 @@
 import type { Part, Era, EraInfo } from "./types";
 import { ERAS } from "./types";
-import { videoExists, audioExists, mindmapExists, getInfographicFilename } from "./files";
+import { getPartAssetUrls } from "./files";
 
 function makePart(
   num: number,
@@ -21,19 +21,18 @@ function makePart(
     duration: duration || undefined,
     includedInEssentials: includeInEssentials,
     assets: {
-      videoUrl: videoExists(num) ? `/api/media/video/${num}` : undefined,
-      audioUrl: audioExists(num) ? `/api/media/audio/${num}` : undefined,
+      // Assets will be loaded dynamically
+      videoUrl: undefined,
+      audioUrl: undefined,
       briefingText: undefined,
       statementOfFactsText: undefined,
       studyGuideText: undefined,
       reportText: undefined,
-      mindmapUrl: mindmapExists(num)
-        ? `/seerah-media/Mindmaps/Part ${num} - Mindmap.png`
-        : undefined,
+      mindmapUrl: undefined,
       infographics: {
-        concise:   (() => { const f = getInfographicFilename(num, "Concise");     return f ? `/seerah-media/Infographics/Concise/${f}`      : undefined; })(),
-        standard:  (() => { const f = getInfographicFilename(num, "Standard");    return f ? `/seerah-media/Infographics/Standard/${f}`     : undefined; })(),
-        bentoGrid: (() => { const f = getInfographicFilename(num, "Bento Grid");  return f ? `/seerah-media/Infographics/Bento Grid/${f}`   : undefined; })(),
+        concise: undefined,
+        standard: undefined,
+        bentoGrid: undefined,
       },
       slides: { presented: [], detailed: [], facts: [] },
     },

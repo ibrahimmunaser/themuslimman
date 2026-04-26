@@ -5,14 +5,15 @@ import {
   BookOpen,
   TrendingUp,
   Library,
-  FolderTree,
+  ShoppingCart,
   ChevronRight,
   ShieldCheck,
+  Activity,
+  Award,
 } from "lucide-react";
 import { requireAdmin } from "@/lib/auth";
 import { getAdminDashboardData } from "@/lib/queries/admin";
 import { StatCard } from "@/components/ui/stat-card";
-import { roleLabel } from "@/lib/roles";
 
 export const metadata = { title: "Admin Dashboard" };
 
@@ -33,20 +34,22 @@ export default async function AdminDashboardPage() {
           Platform overview
         </h1>
         <p className="text-text-secondary mt-1 text-sm">
-          Signed in as {user.fullName}.
+          Welcome back, {user.fullName}.
         </p>
       </div>
 
+      {/* Platform KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
-        <StatCard label="Total users" value={data.totalUsers} icon={Users} tone="gold" />
-        <StatCard label="Teachers" value={data.totalTeachers} icon={GraduationCap} />
-        <StatCard label="Students" value={data.totalStudents} icon={Users} />
-        <StatCard label="Classes" value={data.totalClasses} icon={BookOpen} />
-        <StatCard label="Active classes" value={data.activeClasses} icon={BookOpen} tone="success" />
+        <StatCard label="Total students" value={data.totalStudents} icon={Users} tone="gold" />
+        <StatCard label="Active students" value={data.activeStudents} icon={Activity} tone="success" />
+        <StatCard label="Programs" value={data.totalPrograms} icon={GraduationCap} />
+        <StatCard label="Active programs" value={data.activePrograms} icon={BookOpen} />
         <StatCard label="Enrollments" value={data.totalEnrollments} icon={Users} />
+        <StatCard label="Completions" value={data.completionStats._count} icon={Award} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Quiz Performance */}
         <div className="p-6 rounded-2xl border border-border bg-surface">
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp className="w-4 h-4 text-gold" />
@@ -58,55 +61,57 @@ export default async function AdminDashboardPage() {
               : "—"}
           </p>
           <p className="text-xs text-text-muted mt-1">
-            {data.quizStats._count} total quiz submissions across the platform
+            {data.quizStats._count} total quiz submissions
           </p>
         </div>
 
+        {/* Quick Actions */}
         <div className="p-6 rounded-2xl border border-border bg-surface">
           <p className="text-xs text-text-muted uppercase tracking-wider mb-3">
             Quick actions
           </p>
           <div className="grid grid-cols-2 gap-2">
             <Link
+              href="/admin/students"
+              className="flex items-center gap-2 p-3 rounded-xl border border-border bg-surface-raised hover:border-gold/30 transition-all text-sm text-text-secondary hover:text-text"
+            >
+              <Users className="w-4 h-4 text-gold" />
+              Students
+            </Link>
+            <Link
+              href="/admin/courses"
+              className="flex items-center gap-2 p-3 rounded-xl border border-border bg-surface-raised hover:border-gold/30 transition-all text-sm text-text-secondary hover:text-text"
+            >
+              <BookOpen className="w-4 h-4 text-gold" />
+              Courses
+            </Link>
+            <Link
               href="/admin/content"
               className="flex items-center gap-2 p-3 rounded-xl border border-border bg-surface-raised hover:border-gold/30 transition-all text-sm text-text-secondary hover:text-text"
             >
               <Library className="w-4 h-4 text-gold" />
-              Manage content
+              Content
             </Link>
             <Link
-              href="/admin/course-templates"
-              className="flex items-center gap-2 p-3 rounded-xl border border-border bg-surface-raised hover:border-gold/30 transition-all text-sm text-text-secondary hover:text-text"
-            >
-              <FolderTree className="w-4 h-4 text-gold" />
-              Course templates
-            </Link>
-            <Link
-              href="/admin/teachers"
+              href="/admin/programs"
               className="flex items-center gap-2 p-3 rounded-xl border border-border bg-surface-raised hover:border-gold/30 transition-all text-sm text-text-secondary hover:text-text"
             >
               <GraduationCap className="w-4 h-4 text-gold" />
-              Teachers
-            </Link>
-            <Link
-              href="/admin/classes"
-              className="flex items-center gap-2 p-3 rounded-xl border border-border bg-surface-raised hover:border-gold/30 transition-all text-sm text-text-secondary hover:text-text"
-            >
-              <BookOpen className="w-4 h-4 text-gold" />
-              Classes
+              Programs
             </Link>
           </div>
         </div>
       </div>
 
+      {/* Recent Student Signups */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <p className="text-xs text-text-muted uppercase tracking-wider">Recent signups</p>
+          <p className="text-xs text-text-muted uppercase tracking-wider">Recent student signups</p>
           <Link
-            href="/admin/users"
+            href="/admin/students"
             className="text-xs text-gold hover:text-gold-light transition-colors flex items-center gap-1"
           >
-            All users <ChevronRight className="w-3 h-3" />
+            All students <ChevronRight className="w-3 h-3" />
           </Link>
         </div>
 
@@ -116,8 +121,8 @@ export default async function AdminDashboardPage() {
               <tr className="text-left">
                 <th className="px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Name</th>
                 <th className="px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Email</th>
-                <th className="px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Role</th>
                 <th className="px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Joined</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-muted uppercase tracking-wider">Last login</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -125,13 +130,11 @@ export default async function AdminDashboardPage() {
                 <tr key={u.id} className="hover:bg-surface-raised/50 transition-colors">
                   <td className="px-4 py-3 text-sm text-text">{u.fullName}</td>
                   <td className="px-4 py-3 text-sm text-text-secondary">{u.email}</td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-gold/10 text-gold text-xs font-medium">
-                      {roleLabel(u.role as "admin" | "teacher" | "student")}
-                    </span>
-                  </td>
                   <td className="px-4 py-3 text-sm text-text-muted tabular-nums">
                     {new Date(u.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-text-muted tabular-nums">
+                    {u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString() : "Never"}
                   </td>
                 </tr>
               ))}
