@@ -12,7 +12,9 @@ import {
   mindmapExists,
   readQuiz,
   readFlashcards,
+  getPartAssetUrls,
 } from "@/lib/files";
+import { getR2AssetUrl } from "@/lib/r2";
 import { ChevronRight, Clock, BookOpen } from "lucide-react";
 import { PartTabs } from "@/components/part/part-tabs";
 
@@ -50,6 +52,10 @@ export default async function PreviewPartPage(props: { params: Promise<{ partId:
     hasMindmap,
     quiz,
     flashcards,
+    infConcise,
+    infStandard,
+    infBento,
+    assetUrls,
   ] = await Promise.all([
     getSlideFiles(n, "presented"),
     getSlideFiles(n, "detailed"),
@@ -61,17 +67,23 @@ export default async function PreviewPartPage(props: { params: Promise<{ partId:
     mindmapExists(n),
     readQuiz(n),
     readFlashcards(n),
+    getInfographicFilename(n, "Concise"),
+    getInfographicFilename(n, "Standard"),
+    getInfographicFilename(n, "Bento Grid"),
+    getPartAssetUrls(n),
   ]);
 
   const slideFiles = {
-    presented: slidesPresented.map((p) => `/seerah-media/${p}`),
-    detailed: slidesDetailed.map((p) => `/seerah-media/${p}`),
-    facts: slidesFacts.map((p) => `/seerah-media/${p}`),
+    presented: slidesPresented.map((p) => {
+      return p.includes("slides-") ? getR2AssetUrl(p) : `/seerah-media/${p}`;
+    }),
+    detailed: slidesDetailed.map((p) => {
+      return p.includes("slides-") ? getR2AssetUrl(p) : `/seerah-media/${p}`;
+    }),
+    facts: slidesFacts.map((p) => {
+      return p.includes("slides-") ? getR2AssetUrl(p) : `/seerah-media/${p}`;
+    }),
   };
-
-  const infConcise  = getInfographicFilename(n, "Concise");
-  const infStandard = getInfographicFilename(n, "Standard");
-  const infBento    = getInfographicFilename(n, "Bento Grid");
 
   const part = {
     ...partBase,
@@ -81,14 +93,26 @@ export default async function PreviewPartPage(props: { params: Promise<{ partId:
       statementOfFactsText: statementOfFactsText ?? undefined,
       studyGuideText: studyGuideText ?? undefined,
       reportText: reportText ?? undefined,
-      mindmapUrl: hasMindmap ? `/seerah-media/Mindmaps/Part ${n} - Mindmap.png` : undefined,
+      mindmapUrl: assetUrls.mindmapUrl,
       quiz: quiz ?? undefined,
       flashcards: flashcards ?? undefined,
       slides: slideFiles,
       infographics: {
-        concise:   infConcise  ? `/seerah-media/Infographics/Concise/${infConcise}`    : undefined,
-        standard:  infStandard ? `/seerah-media/Infographics/Standard/${infStandard}`  : undefined,
-        bentoGrid: infBento    ? `/seerah-media/Infographics/Bento Grid/${infBento}`   : undefined,
+        concise: infConcise
+          ? (infConcise.includes("infographics/") 
+              ? getR2AssetUrl(infConcise) 
+              : `/seerah-media/Infographics/Concise/${infConcise}`)
+          : undefined,
+        standard: infStandard
+          ? (infStandard.includes("infographics/") 
+              ? getR2AssetUrl(infStandard) 
+              : `/seerah-media/Infographics/Standard/${infStandard}`)
+          : undefined,
+        bentoGrid: infBento
+          ? (infBento.includes("infographics/") 
+              ? getR2AssetUrl(infBento) 
+              : `/seerah-media/Infographics/Bento Grid/${infBento}`)
+          : undefined,
       },
     },
   };
