@@ -16,7 +16,6 @@ import {
   readFlashcards,
   getPartAssetUrls,
 } from "@/lib/files";
-import { getR2AssetUrl } from "@/lib/r2";
 import {
   ArrowLeft,
   ChevronLeft,
@@ -98,15 +97,9 @@ export default async function StudentLessonPage({ params }: Props) {
   ]);
 
   const slideFiles = {
-    presented: slidesPresentedFiles.map((p) => {
-      return p.includes("slides-") ? getR2AssetUrl(p) : `/seerah-media/${p}`;
-    }),
-    detailed: slidesDetailedFiles.map((p) => {
-      return p.includes("slides-") ? getR2AssetUrl(p) : `/seerah-media/${p}`;
-    }),
-    facts: slidesFactsFiles.map((p) => {
-      return p.includes("slides-") ? getR2AssetUrl(p) : `/seerah-media/${p}`;
-    }),
+    presented: slidesPresentedFiles,
+    detailed: slidesDetailedFiles,
+    facts: slidesFactsFiles,
   };
 
   const part = {

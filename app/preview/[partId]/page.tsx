@@ -14,7 +14,6 @@ import {
   readFlashcards,
   getPartAssetUrls,
 } from "@/lib/files";
-import { getR2AssetUrl } from "@/lib/r2";
 import { ChevronRight, Clock, BookOpen } from "lucide-react";
 import { PartTabs } from "@/components/part/part-tabs";
 
@@ -74,15 +73,9 @@ export default async function PreviewPartPage(props: { params: Promise<{ partId:
   ]);
 
   const slideFiles = {
-    presented: slidesPresented.map((p) => {
-      return p.includes("slides-") ? getR2AssetUrl(p) : `/seerah-media/${p}`;
-    }),
-    detailed: slidesDetailed.map((p) => {
-      return p.includes("slides-") ? getR2AssetUrl(p) : `/seerah-media/${p}`;
-    }),
-    facts: slidesFacts.map((p) => {
-      return p.includes("slides-") ? getR2AssetUrl(p) : `/seerah-media/${p}`;
-    }),
+    presented: slidesPresented,
+    detailed: slidesDetailed,
+    facts: slidesFacts,
   };
 
   const part = {

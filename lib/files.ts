@@ -188,8 +188,8 @@ export async function getSlideFiles(
 ): Promise<string[]> {
   if (USE_R2) {
     const keys = await r2GetSlideKeys(partNum, type);
-    // Return just the relative paths for backward compatibility
-    return keys.map((key) => key.replace(/^slides-(presented|detailed|facts)\//, ""));
+    // Return R2 asset URLs
+    return keys.map(getR2AssetUrl);
   }
 
   let folder: string;
@@ -204,9 +204,9 @@ export async function getSlideFiles(
       .filter((f) => f.endsWith(".png"))
       .sort()
       .map((f) => {
-        // Return relative path from SEERAH_ROOT for use in the API
+        // Return relative path from SEERAH_ROOT for use in local API
         const rel = path.relative(SEERAH_ROOT, path.join(folder, f));
-        return rel.replace(/\\/g, "/"); // normalize to forward slashes
+        return `/seerah-media/${rel.replace(/\\/g, "/")}`; // Return as URL path
       });
   } catch {
     return [];
