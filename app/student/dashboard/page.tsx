@@ -3,7 +3,6 @@ import {
   GraduationCap,
   CheckCircle2,
   BookOpen,
-  Megaphone,
   ChevronRight,
   KeyRound,
   Play,
@@ -60,7 +59,7 @@ export default async function StudentDashboardPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
         <StatCard
           label="Programs"
           value={data.enrollments.length}
@@ -77,11 +76,6 @@ export default async function StudentDashboardPage() {
           value={completedProgress}
           icon={CheckCircle2}
           tone="success"
-        />
-        <StatCard
-          label="Announcements"
-          value={data.recentAnnouncements.length}
-          icon={Megaphone}
         />
       </div>
 
@@ -115,8 +109,8 @@ export default async function StudentDashboardPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <section className="lg:col-span-2">
+      <div className="grid grid-cols-1 gap-6">
+        <section>
           <div className="flex items-center justify-between mb-4">
             <p className="text-xs text-text-muted uppercase tracking-wider">Your programs</p>
             <Link
@@ -178,35 +172,6 @@ export default async function StudentDashboardPage() {
             </div>
           )}
         </section>
-
-        <aside>
-          <p className="text-xs text-text-muted uppercase tracking-wider mb-4">Announcements</p>
-          {data.recentAnnouncements.length === 0 ? (
-            <EmptyState
-              icon={Megaphone}
-              title="All quiet"
-              description="No recent announcements."
-            />
-          ) : (
-            <div className="space-y-2">
-              {data.recentAnnouncements.map((a) => (
-                <div key={a.id} className="p-3 rounded-xl border border-border bg-surface">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Megaphone className="w-3 h-3 text-gold flex-shrink-0" />
-                    <p className="text-xs text-text-muted truncate">{a.class.title}</p>
-                  </div>
-                  <p className="text-sm font-medium text-text mb-1">{a.title}</p>
-                  <p className="text-xs text-text-secondary line-clamp-2">{a.body}</p>
-                  {a.publishedAt && (
-                    <p className="text-[10px] text-text-muted mt-2">
-                      {new Date(a.publishedAt).toLocaleDateString()}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </aside>
       </div>
     </div>
   );
