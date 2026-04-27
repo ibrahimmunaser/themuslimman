@@ -21,8 +21,22 @@ import { Footer } from "@/components/landing/footer";
 import { TestimonialsSection } from "@/components/landing/testimonials";
 import { buttonClass } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { getCurrentUser } from "@/lib/auth";
+import { getStudentDashboardData } from "@/lib/queries/student";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  // Check if user is logged in and get their progress
+  const user = await getCurrentUser();
+  let userProgress = null;
+
+  if (user?.studentProfileId) {
+    try {
+      const dashboardData = await getStudentDashboardData(user.studentProfileId);
+      userProgress = dashboardData.recentProgress[0] || null; // Get most recent progress
+    } catch (error) {
+      console.error("Failed to fetch user progress:", error);
+    }
+  }
   return (
     <div className="flex flex-col min-h-screen bg-ink text-text">
       <Navbar />
@@ -102,65 +116,48 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Dashboard preview */}
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 mt-16">
-          <div className="relative rounded-2xl overflow-hidden border border-border/50 shadow-2xl shadow-black/50">
-            <div className="bg-surface border-b border-border px-4 py-3 flex items-center gap-2">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-500/60" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-                <div className="w-3 h-3 rounded-full bg-green-500/60" />
-              </div>
-              <div className="flex-1 text-center">
-                <span className="text-xs text-text-muted">themuslimman.com/dashboard</span>
-              </div>
-            </div>
-            <div className="bg-surface-raised p-6 md:p-8">
-              <div className="flex flex-col gap-4">
-                {/* Mock dashboard preview */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-text-muted uppercase tracking-wider">Continue where you left off</p>
-                    <h3 className="text-text font-semibold mt-1">Part 15: The First Revelation</h3>
-                  </div>
-                  <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center">
-                    <Video className="w-4 h-4 text-gold" />
-                  </div>
+        {/* Dashboard preview - only show for logged-in users with progress */}
+        {user && userProgress && (
+          <div className="relative max-w-5xl mx-auto px-4 sm:px-6 mt-16">
+            <div className="relative rounded-2xl overflow-hidden border border-border/50 shadow-2xl shadow-black/50">
+              <div className="bg-surface border-b border-border px-4 py-3 flex items-center gap-2">
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-500/60" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
+                  <div className="w-3 h-3 rounded-full bg-green-500/60" />
                 </div>
-                <div className="w-full bg-surface rounded-full h-1.5">
-                  <div className="bg-gold h-1.5 rounded-full" style={{ width: "47%" }} />
+                <div className="flex-1 text-center">
+                  <span className="text-xs text-text-muted">themuslimman.com/dashboard</span>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {[
-                    { label: "Before Revelation", count: "5 parts", done: true },
-                    { label: "Birth & Early Life", count: "7 parts", done: true },
-                    { label: "First Revelation", count: "8 parts", done: false },
-                    { label: "Makkah Period", count: "15 parts", done: false },
-                  ].map((era) => (
-                    <div
-                      key={era.label}
-                      className={`p-3 rounded-xl border text-left ${
-                        era.done
-                          ? "border-success/20 bg-success/5"
-                          : "border-border bg-surface"
-                      }`}
-                    >
-                      <div className="flex items-center gap-1.5 mb-1">
-                        {era.done ? (
-                          <CircleCheck className="w-3 h-3 text-success flex-shrink-0" />
-                        ) : (
-                          <div className="w-3 h-3 rounded-full border border-border-subtle flex-shrink-0" />
-                        )}
-                        <span className="text-xs text-text-secondary font-medium truncate">{era.label}</span>
-                      </div>
-                      <p className="text-xs text-text-muted pl-4">{era.count}</p>
+              </div>
+              <div className="bg-surface-raised p-6 md:p-8">
+                <div className="flex flex-col gap-4">
+                  {/* User's actual progress */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-text-muted uppercase tracking-wider">Continue where you left off</p>
+                      <h3 className="text-text font-semibold mt-1">
+                        Part {userProgress.classCourseItem.seerahPart?.partNumber}: {userProgress.classCourseItem.seerahPart?.title || "Loading..."}
+                      </h3>
                     </div>
-                  ))}
+                    <div className="w-10 h-10 rounded-full bg-gold/20 border border-gold/30 flex items-center justify-center">
+                      <Video className="w-4 h-4 text-gold" />
+                    </div>
+                  </div>
+                  <div className="w-full bg-surface rounded-full h-1.5">
+                    <div 
+                      className="bg-gold h-1.5 rounded-full" 
+                      style={{ width: `${Math.round((userProgress.progressPercentage || 0))}%` }} 
+                    />
+                  </div>
+                  <div className="text-xs text-text-muted">
+                    {Math.round((userProgress.progressPercentage || 0))}% complete
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </section>
 
       {/* ============================================
