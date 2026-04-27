@@ -147,11 +147,11 @@ export default async function LandingPage() {
                   <div className="w-full bg-surface rounded-full h-1.5">
                     <div 
                       className="bg-gold h-1.5 rounded-full" 
-                      style={{ width: `${Math.round((userProgress.progressPercentage || 0))}%` }} 
+                      style={{ width: `${userProgress.completionPercentage || 0}%` }} 
                     />
                   </div>
                   <div className="text-xs text-text-muted">
-                    {Math.round((userProgress.progressPercentage || 0))}% complete
+                    {userProgress.completionPercentage || 0}% complete
                   </div>
                 </div>
               </div>
