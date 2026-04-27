@@ -25,6 +25,7 @@ import { MindmapViewer } from "./mindmap-viewer";
 import { SlidesViewer } from "./slides-viewer";
 import { QuizViewer } from "./quiz-viewer";
 import { FlashcardsViewer } from "./flashcards-viewer";
+import { ResponsiveImage } from "@/components/ui/responsive-image";
 import type { Part } from "@/lib/types";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -146,7 +147,7 @@ function InfographicPanel({ part }: { part: Part }) {
   const altLabel = `Part ${part.partNumber} Infographic — ${style}`;
 
   return (
-    <div>
+    <div className="space-y-4">
       {styles.length > 1 && (
         <div className="flex gap-2 mb-4">
           {styles.map((s) => (
@@ -169,17 +170,15 @@ function InfographicPanel({ part }: { part: Part }) {
             onClick={() => setLightboxOpen(true)}
             title="Click to enlarge"
           >
-            <NextImage
+            {/* Use responsive WebP-optimized image */}
+            <ResponsiveImage
               src={currentSrc}
               alt={altLabel}
-              width={1920} height={1080}
-              className="w-full h-auto"
-              sizes="(max-width: 768px) 100vw, 80vw"
               priority
-              unoptimized
+              onClick={() => setLightboxOpen(true)}
             />
             {/* Hover overlay */}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors flex items-center justify-center pointer-events-none">
               <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black/70 border border-white/15 text-white text-xs font-medium">
                 <Maximize2 className="w-3.5 h-3.5" />
                 Enlarge

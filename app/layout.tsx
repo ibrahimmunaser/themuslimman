@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Toaster } from "sonner";
+import { ServiceWorkerRegistration } from "@/components/service-worker";
 import "./globals.css";
 
 const geist = Geist({
@@ -45,6 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable} h-full`}>
       <body className="min-h-full bg-ink text-text antialiased">
+        <ServiceWorkerRegistration />
         {children}
         <Toaster position="bottom-right" richColors theme="dark" />
       </body>

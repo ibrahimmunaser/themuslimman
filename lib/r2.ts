@@ -36,6 +36,30 @@ export function getR2PublicUrl(key: string): string | null {
 }
 
 /**
+ * Generate responsive image URLs for WebP optimization
+ * Automatically converts PNG keys to WebP and provides multiple sizes
+ * @param key - The original image key (e.g., "Infographics-Bento-Grid/Part 1.png")
+ * @returns Object with URLs for different sizes and fallback
+ */
+export function getResponsiveImageUrls(key: string) {
+  if (!R2_PUBLIC_URL || !R2_BUCKET) return null;
+  
+  // Convert PNG to WebP base key
+  const webpKey = key.replace(/\.png$/i, ".webp");
+  const baseKey = key.replace(/\.png$/i, "");
+  
+  return {
+    // WebP versions (optimized, 80-95% smaller)
+    thumbnail: getR2PublicUrl(`${baseKey}-thumb.webp`),  // 400px width
+    medium: getR2PublicUrl(`${baseKey}-medium.webp`),     // 800px width
+    large: getR2PublicUrl(`${baseKey}-large.webp`),       // 1200px width
+    full: getR2PublicUrl(webpKey),                         // Original size in WebP
+    // PNG fallback for old browsers (Safari < 14, etc.)
+    fallback: getR2PublicUrl(key),
+  };
+}
+
+/**
  * Generate an asset URL (for API proxy route)
  * @param key - The object key in R2
  * @returns API route URL
