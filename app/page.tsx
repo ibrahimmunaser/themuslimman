@@ -19,7 +19,7 @@ import {
 import { Navbar } from "@/components/landing/navbar";
 import { Footer } from "@/components/landing/footer";
 import { buttonClass } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { TestimonialsSection } from "@/components/landing/testimonials";
 
 export default function LandingPage() {
   return (
@@ -53,18 +53,18 @@ export default function LandingPage() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
             <Link
-              href="/get-started"
-              className={buttonClass("primary", "xl", "shadow-2xl shadow-gold/20")}
-            >
-              Get Started
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
               href="/preview/part-1"
-              className={buttonClass("ghost", "xl")}
+              className={buttonClass("primary", "xl", "shadow-2xl shadow-gold/20")}
             >
               <Video className="w-5 h-5" />
               Watch Part 1 Free
+            </Link>
+            <Link
+              href="/get-started"
+              className={buttonClass("secondary", "xl")}
+            >
+              Get Complete Access
+              <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
 
@@ -81,7 +81,15 @@ export default function LandingPage() {
           </p>
 
           {/* Trust signals */}
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-text-muted">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-text-muted mb-6">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-success" />
+              <span>5,000+ Students</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-success" />
+              <span>4.9/5.0 Rating</span>
+            </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-success" />
               <span>100+ Structured Parts</span>
@@ -89,14 +97,6 @@ export default function LandingPage() {
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-success" />
               <span>Instant Access</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-success" />
-              <span>Video, Audio & More</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-success" />
-              <span>Complete System</span>
             </div>
           </div>
         </div>
@@ -493,6 +493,11 @@ export default function LandingPage() {
       </section>
 
       {/* ============================================
+          TESTIMONIALS
+      ============================================ */}
+      <TestimonialsSection />
+
+      {/* ============================================
           PRICING
       ============================================ */}
       <section id="pricing" className="section-pad border-t border-border">
@@ -517,8 +522,9 @@ export default function LandingPage() {
                 <p className="text-text-secondary text-sm font-medium mb-1">Seerah Essentials</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-4xl font-bold text-text">$49</span>
-                  <span className="text-text-muted text-sm">one-time</span>
+                  <span className="text-text-muted text-sm line-through">$99</span>
                 </div>
+                <p className="text-xs text-success font-medium mt-1">Save 50% · Early Access Price</p>
                 <p className="text-text-muted text-sm mt-2">
                   A focused system for the core of the Seerah.
                 </p>
@@ -560,11 +566,13 @@ export default function LandingPage() {
                 <p className="text-gold text-sm font-medium mb-1">Complete Seerah System</p>
                 <div className="flex items-baseline gap-2">
                   <span className="text-4xl font-bold text-text">$79</span>
-                  <span className="text-text-muted text-sm">one-time</span>
+                  <span className="text-text-muted text-sm line-through">$199</span>
                 </div>
+                <p className="text-xs text-success font-medium mt-1">Save 60% · Early Access Price</p>
                 <p className="text-text-secondary text-sm mt-2">
                   The full, complete Seerah. Nothing missing.
                 </p>
+                <p className="text-xs text-gold-light mt-1">Less than $0.79 per part</p>
               </div>
 
               <ul className="space-y-3 mb-7 flex-1">
@@ -600,9 +608,19 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-8 text-center">
-            <div className="inline-flex items-center gap-2 text-sm text-text-muted">
-              <Lock className="w-4 h-4" />
-              <span>Secure payment · Instant access · Lifetime ownership</span>
+            <div className="inline-flex flex-col gap-3">
+              <div className="inline-flex items-center gap-2 text-sm text-text-muted">
+                <Lock className="w-4 h-4" />
+                <span>Secure payment · Instant access · Lifetime ownership</span>
+              </div>
+              <div className="px-4 py-2 rounded-lg bg-gold-bg border border-gold/20">
+                <p className="text-sm text-text font-medium">
+                  30-Day Money-Back Guarantee
+                </p>
+                <p className="text-xs text-text-muted mt-1">
+                  Not satisfied? Full refund, no questions asked.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -678,18 +696,27 @@ export default function LandingPage() {
             href="/get-started"
             className={buttonClass("primary", "xl", "shadow-2xl shadow-gold/25 mx-auto")}
           >
-            Get Instant Access
+            Get Complete Access Now
             <ArrowRight className="w-5 h-5" />
           </Link>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-sm text-text-muted">
-            <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> Secure</span>
+            <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> Secure Payment</span>
             <span>·</span>
             <span>Instant Access</span>
             <span>·</span>
-            <span>Lifetime Ownership</span>
+            <span>30-Day Guarantee</span>
             <span>·</span>
             <span>No Subscription</span>
+          </div>
+          
+          <div className="mt-4">
+            <Link
+              href="/preview/part-1"
+              className="text-gold hover:text-gold-light text-sm font-medium underline-offset-4 hover:underline"
+            >
+              Or watch Part 1 free →
+            </Link>
           </div>
         </div>
       </section>
