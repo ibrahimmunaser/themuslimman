@@ -24,13 +24,13 @@ export function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/pricing" className="text-sm text-text-secondary hover:text-text transition-colors">
+            <Link href="#pricing" className="text-sm text-text-secondary hover:text-text transition-colors">
               Pricing
             </Link>
             <Link href="/login" className="text-sm text-text-secondary hover:text-text transition-colors">
               Login
             </Link>
-            <Link href="/get-started" className={buttonClass("primary", "sm")}>
+            <Link href="#pricing" className={buttonClass("primary", "sm")}>
               Get Started
             </Link>
           </div>
@@ -48,14 +48,14 @@ export function Navbar() {
         {/* Mobile menu */}
         {open && (
           <div className="md:hidden border-t border-border px-4 py-4 flex flex-col gap-4 bg-ink">
-            <Link href="/pricing" onClick={() => setOpen(false)} className="text-sm text-text-secondary hover:text-text transition-colors">
+            <Link href="#pricing" onClick={() => setOpen(false)} className="text-sm text-text-secondary hover:text-text transition-colors">
               Pricing
             </Link>
             <Link href="/login" onClick={() => setOpen(false)} className="text-sm text-text-secondary hover:text-text transition-colors">
               Login
             </Link>
             <Link
-              href="/get-started"
+              href="#pricing"
               onClick={() => setOpen(false)}
               className={buttonClass("primary", "sm", "w-full justify-center")}
             >
