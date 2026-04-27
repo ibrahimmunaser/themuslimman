@@ -75,7 +75,7 @@ export default async function LandingPage() {
               Watch Part 1 Free
             </Link>
             <Link
-              href="/get-started"
+              href="#pricing"
               className={buttonClass("secondary", "xl")}
             >
               Get Complete Access
