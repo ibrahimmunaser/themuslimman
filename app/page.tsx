@@ -545,7 +545,7 @@ export default async function LandingPage() {
               </ul>
 
               <Link
-                href="/get-started"
+                href="/get-started?plan=essentials"
                 className={buttonClass("secondary", "lg", "w-full justify-center")}
               >
                 Get Started
@@ -592,7 +592,7 @@ export default async function LandingPage() {
               </ul>
 
               <Link
-                href="/get-started"
+                href="/get-started?plan=complete"
                 className={buttonClass("primary", "lg", "w-full justify-center")}
               >
                 Get Complete Access
