@@ -295,8 +295,9 @@ export async function getPartAssetUrls(partNum: number) {
   ]);
 
   return {
-    videoUrl: videoKey ? getR2AssetUrl(videoKey) : undefined,
-    audioUrl: audioKey ? getR2AssetUrl(audioKey) : undefined,
-    mindmapUrl: mindmapKey ? getR2AssetUrl(mindmapKey) : undefined,
+    // Use public URLs for better performance (direct CDN access)
+    videoUrl: videoKey ? getR2PublicUrl(videoKey) : undefined,
+    audioUrl: audioKey ? getR2PublicUrl(audioKey) : undefined,
+    mindmapUrl: mindmapKey ? getR2PublicUrl(mindmapKey) : undefined,
   };
 }

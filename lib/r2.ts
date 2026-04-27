@@ -286,18 +286,19 @@ export async function r2GetLessonAssets(partNum: number) {
   ]);
   
   return {
-    video: videoKey ? getR2AssetUrl(videoKey) : undefined,
-    audio: audioKey ? getR2AssetUrl(audioKey) : undefined,
-    mindmap: mindmapKey ? getR2AssetUrl(mindmapKey) : undefined,
+    // Use public URLs for better performance (direct CDN access)
+    video: videoKey ? getR2PublicUrl(videoKey) : undefined,
+    audio: audioKey ? getR2PublicUrl(audioKey) : undefined,
+    mindmap: mindmapKey ? getR2PublicUrl(mindmapKey) : undefined,
     infographics: {
-      concise: infoConciseKey ? getR2AssetUrl(infoConciseKey) : undefined,
-      standard: infoStandardKey ? getR2AssetUrl(infoStandardKey) : undefined,
-      bentoGrid: infoBentoKey ? getR2AssetUrl(infoBentoKey) : undefined,
+      concise: infoConciseKey ? getR2PublicUrl(infoConciseKey) : undefined,
+      standard: infoStandardKey ? getR2PublicUrl(infoStandardKey) : undefined,
+      bentoGrid: infoBentoKey ? getR2PublicUrl(infoBentoKey) : undefined,
     },
     slides: {
-      presented: slidesPresented.map(getR2AssetUrl),
-      detailed: slidesDetailed.map(getR2AssetUrl),
-      facts: slidesFacts.map(getR2AssetUrl),
+      presented: slidesPresented.map((key) => getR2PublicUrl(key) || key),
+      detailed: slidesDetailed.map((key) => getR2PublicUrl(key) || key),
+      facts: slidesFacts.map((key) => getR2PublicUrl(key) || key),
     },
   };
 }
