@@ -18,8 +18,9 @@ import {
 } from "lucide-react";
 import { Navbar } from "@/components/landing/navbar";
 import { Footer } from "@/components/landing/footer";
-import { buttonClass } from "@/components/ui/button";
 import { TestimonialsSection } from "@/components/landing/testimonials";
+import { buttonClass } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export default function LandingPage() {
   return (
