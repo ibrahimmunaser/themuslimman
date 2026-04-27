@@ -609,19 +609,9 @@ export default function LandingPage() {
           </div>
 
           <div className="mt-8 text-center">
-            <div className="inline-flex flex-col gap-3">
-              <div className="inline-flex items-center gap-2 text-sm text-text-muted">
-                <Lock className="w-4 h-4" />
-                <span>Secure payment · Instant access · Lifetime ownership</span>
-              </div>
-              <div className="px-4 py-2 rounded-lg bg-gold-bg border border-gold/20">
-                <p className="text-sm text-text font-medium">
-                  30-Day Money-Back Guarantee
-                </p>
-                <p className="text-xs text-text-muted mt-1">
-                  Not satisfied? Full refund, no questions asked.
-                </p>
-              </div>
+            <div className="inline-flex items-center gap-2 text-sm text-text-muted">
+              <Lock className="w-4 h-4" />
+              <span>Secure payment · Instant access · Lifetime ownership</span>
             </div>
           </div>
         </div>
@@ -705,8 +695,6 @@ export default function LandingPage() {
             <span className="flex items-center gap-1.5"><Lock className="w-3.5 h-3.5" /> Secure Payment</span>
             <span>·</span>
             <span>Instant Access</span>
-            <span>·</span>
-            <span>30-Day Guarantee</span>
             <span>·</span>
             <span>No Subscription</span>
           </div>
